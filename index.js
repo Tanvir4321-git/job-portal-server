@@ -3,7 +3,7 @@ const app = express()
 require('dotenv').config()
 const cors = require('cors')
 const port = process.env.PORT || 5000
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 //mideleware
 app.use(express.json())
@@ -27,7 +27,7 @@ async function run() {
 
    const db = client.db('Job-Portal')
    const usercollection=db.collection('users')
-
+   const jobcollection=db.collection('jobs')
 
         //users related api 
 
@@ -54,11 +54,33 @@ async function run() {
       res.send({ role: user?.role || 'users',  })
     })
 
-    
 
+   // save job in  db by admin
+   app.post ('/post-job', async (req,res)=>{
+    const jobInfo=req.body
 
+      const result = await jobcollection.insertOne(jobInfo)
+      res.send(result)
 
+   })
 
+   // get added jobs for admin
+
+ app.get('/jobs',  async (req, res) => {
+      
+      const resutlt = await jobcollection.find().toArray()
+      res.send(resutlt)
+    })
+
+    // job delete by admin
+
+    app.delete('/job-delete/:id', async(req,res)=>{
+      const id=req.params.id
+      const query={_id : new ObjectId(id)}
+      const result =await jobcollection.deleteOne(query)
+      res.send(result)
+
+    })
 
 
 
