@@ -28,6 +28,7 @@ async function run() {
    const db = client.db('Job-Portal')
    const usercollection=db.collection('users')
    const jobcollection=db.collection('jobs')
+   const userapplication=db.collection('applied-job')
 
         //users related api 
 
@@ -55,7 +56,7 @@ async function run() {
     })
 
 
-   // save job in  db by admin
+   // post job in  db by admin
    app.post ('/post-job', async (req,res)=>{
     const jobInfo=req.body
 
@@ -91,6 +92,17 @@ async function run() {
     const result = await jobcollection.find(query).toArray()
     res.send(result)
 })
+
+// apply job by user
+ app.post ('/apply-job', async (req,res)=>{
+    const jobInfo=req.body
+
+      const result = await userapplication.insertOne(jobInfo)
+      res.send(result)
+
+   })
+
+
   
     // job delete by admin
 
