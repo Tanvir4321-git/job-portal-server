@@ -64,14 +64,34 @@ async function run() {
 
    })
 
+   // jod details 
+
+  app.get('/job-details/:id', async(req,res)=>{
+      const id=req.params.id
+      const query={_id : new ObjectId(id)}
+      const result =await jobcollection.findOne(query)
+      res.send(result)
+
+    })
    // get added jobs for admin
 
- app.get('/jobs',  async (req, res) => {
-      
-      const resutlt = await jobcollection.find().toArray()
-      res.send(resutlt)
-    })
+ app.get('/jobs', async (req, res) => {
+    const { search, filter } = req.query
 
+    let query = {}
+
+    if (search) {
+        query.title = { $regex: search, $options: 'i' }
+    }
+
+    if (filter) {
+        query.tags = { $in: [filter] }
+    }
+
+    const result = await jobcollection.find(query).toArray()
+    res.send(result)
+})
+  
     // job delete by admin
 
     app.delete('/job-delete/:id', async(req,res)=>{
